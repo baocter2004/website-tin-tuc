@@ -26,7 +26,8 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'first_name' => 'required|string|max:60',
+            'last_name' => 'required|string|max:60',
             'email' => [
                 'required',
                 Rule::unique('users'),
@@ -37,7 +38,11 @@ class StoreUserRequest extends FormRequest
                 'required',
                 Rule::in(User::USER_ROLE)
             ],
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'is_active' => [
+                'nullable',
+                Rule::in([0,1])
+            ]
         ];
     }
 }

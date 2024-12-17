@@ -28,5 +28,10 @@ Route::prefix('admin')
                 Route::get('/{user}/edit', 'edit')->name('edit');
                 Route::put('/{user}', 'update')->name('update');
                 Route::delete('/{user}', 'destroy')->name('destroy');
+
+                Route::get('/trash','trash')->name('trash');
+                Route::post('/trash/{user}','restore')->name('restore');
+                Route::delete('/{user}/force-destroy', 'forceDestroy')->name('force-destroy');
+                
             });
     });

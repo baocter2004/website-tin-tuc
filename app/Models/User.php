@@ -20,11 +20,13 @@ class User extends Authenticatable
      */
     const USER_ROLE = ['admin','editor','author','subcriber'];
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'role',
         'image',
+        'is_active'
     ];
 
     /**
@@ -44,6 +46,10 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+    ];
+
+    public $attributes = [
+        'is_active' => 0
     ];
 
     public function isAdmin() {

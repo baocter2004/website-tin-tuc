@@ -27,7 +27,8 @@ class UpdateUserRequest extends FormRequest
     {
         $id = $this->segment(3);
         return [
-            'name' => 'required|string',
+            'first_name' => 'required|string|max:60',
+            'last_name' => 'required|string|max:60',
             'email' => [
                 'required',
                 Rule::unique('users')->ignore($id),
@@ -38,6 +39,10 @@ class UpdateUserRequest extends FormRequest
                 Rule::in(User::USER_ROLE)
             ],
             'image' => 'nullable|image|max:2048',
+            'is_active' => [
+                'nullable',
+                Rule::in([0,1])
+            ]
         ];
     }
 }
