@@ -33,7 +33,15 @@ class StoreUserRequest extends FormRequest
                 Rule::unique('users'),
                 'email'
             ],
-            'password' => 'required|confirmed',
+            "password" => [
+                'required',
+                'confirmed',
+                'string',
+                'min:8', // Độ dài tối thiểu
+                'regex:/[a-z]/', // Ít nhất 1 chữ cái thường
+                'regex:/[0-9]/', // Ít nhất 1 chữ số
+                'regex:/[\W_]/', // Ít nhất 1 ký tự đặc biệt
+            ],
             'role' => [
                 'required',
                 Rule::in(User::USER_ROLE)
@@ -41,7 +49,7 @@ class StoreUserRequest extends FormRequest
             'image' => 'nullable|image|max:2048',
             'is_active' => [
                 'nullable',
-                Rule::in([0,1])
+                Rule::in([0, 1])
             ]
         ];
     }

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -35,6 +36,8 @@ class UserController extends Controller
                 $data['image'] = $imagePath;
             }
 
+            $data['password'] = Hash::make($storeUserRequest->password);
+
             User::create($data);
 
             return redirect()->route('admin.users.index')->with('success', 'Thêm Mới Thành Công !');
@@ -42,7 +45,9 @@ class UserController extends Controller
             if ($imagePath) {
                 Storage::delete($imagePath);
             }
-            return redirect()->back()->withErrors('errors', 'Thêm Mới Không Thành Công');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -53,7 +58,9 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             return view('admin.users.show', compact('user'));
         } catch (\Throwable $th) {
-            return back()->with('errors', 'Không Thành Công !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -64,7 +71,9 @@ class UserController extends Controller
             $roles = User::USER_ROLE;
             return view('admin.users.edit', compact(['user', 'roles']));
         } catch (\Throwable $th) {
-            return back()->with('errors', 'Không Thành Công !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -98,7 +107,9 @@ class UserController extends Controller
 
             return redirect()->route('admin.users.edit', $user->id)->with('success', 'Thêm Mới Thành Công !');
         } catch (\Throwable $th) {
-            return back()->with('errors', 'Lỗi không sửa được !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -113,7 +124,9 @@ class UserController extends Controller
 
             return redirect()->route('admin.users.index')->with('success', 'Xóa Thành Công !!!');
         } catch (\Throwable $th) {
-            return back()->with('errors', 'Không tìm thấy !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -130,10 +143,12 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.users.index');
+            return redirect()->route('admin.users.index')->with('success', 'Xóa Thành Công');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->with('errors', 'Xóa Không Thành Công !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 
@@ -154,7 +169,9 @@ class UserController extends Controller
 
             return redirect()->route('admin.users.index')->with('success', 'Khôi Phục Thành Công !!!');
         } catch (\Throwable $th) {
-            return back()->with('errors', 'Có Lỗi Xảy Ra !!!');
+            return redirect()->back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra'
+            ]);
         }
     }
 }

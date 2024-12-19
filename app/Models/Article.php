@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use League\CommonMark\Node\Block\Paragraph;
 
 class Article extends Model
 {
@@ -21,4 +22,33 @@ class Article extends Model
         "status",
         'delete_reason'
     ];
+    const STATUSES = [
+        'draft',
+        'published',
+        'approved',
+        'deleted',
+    ];
+
+    public $attributes = [
+        'status' => self::STATUSES[0]
+    ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function paragraphs()
+    {
+        return $this->hasMany(Paragraph::class);
+    }
 }
