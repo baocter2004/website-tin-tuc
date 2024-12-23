@@ -24,7 +24,7 @@
             <div class="form-group">
                 <label>Last Name</label>
                 <input type="text" name="last_name" class="form-control" placeholder="first Name">
-            </div>
+            </div> 
             <div class="form-group">
                 <label>Email address</label>
                 <input type="email" name="email" class="form-control" placeholder="Email">

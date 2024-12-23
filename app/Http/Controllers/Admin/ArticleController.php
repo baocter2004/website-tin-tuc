@@ -18,7 +18,7 @@ class ArticleController extends Controller
 {
     public function index()
     {
-        $articles = Article::with('category', 'tags', 'user')->latest('id')->paginate(5);
+        $articles = Article::with('tags', 'paragraphs')->latest('id')->paginate(5);
         return view('admin.articles.index', compact('articles'));
     }
     public function create()
@@ -120,7 +120,7 @@ class ArticleController extends Controller
     public function show(string $id)
     {
         try {
-            $article = Article::with('category', 'tags', 'user')->findOrFail($id);
+            $article = Article::with('tags', 'paragraphs')->findOrFail($id);
             return view('admin.articles.show', compact('article'))->with('success', 'Tìm Thành Công !!!');
         } catch (\Throwable $th) {
             Log::error("Lỗi : - " . $th->getMessage());
@@ -135,7 +135,7 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
         try {
-            $article = Article::with('category', 'tags', 'user')->findOrFail($id);
+            $article = Article::with('tags')->findOrFail($id);
             $categories = Category::select('id', 'name')->get();
             $tags = Tag::select('id', 'name')->get();
             $articleTags = $article->tags->pluck('id')->all();
@@ -260,6 +260,28 @@ class ArticleController extends Controller
 
             DB::rollBack();
             return back()->withErrors(['message' => 'Có Lỗi !!!']);
+        }
+    }
+    public function trash()
+    {
+        $articles = Article::with('user', 'tags', 'category')->onlyTrashed()->latest('deleted_at')->paginate(5);
+        return view('admin.articles.trash', compact('articles'));
+    }
+    public function restore(string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $article = Article::onlyTrashed()->findOrFail($id);
+            $article->restore();
+            if (!empty($article->tags)) {
+                $article->tags()->sync($article->tags->pluck('id')->toArray());
+            }
+            DB::commit();
+            return redirect()->route('admin.articles.index')->with('success', 'Khôi phục và đồng bộ tags thành công!');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Lỗi khôi phục bài viết: " . $th->getMessage());
+            return back()->withErrors(['message' => 'Có lỗi xảy ra trong quá trình khôi phục!']);
         }
     }
 }

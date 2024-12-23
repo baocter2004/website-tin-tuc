@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +17,7 @@ class UserController extends Controller
         $users = User::latest('id')->paginate(5);
         return view('admin.users.index', compact(['users']));
     }
-
+    
     public function create()
     {
         $roles = User::USER_ROLE;

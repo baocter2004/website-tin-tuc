@@ -5,13 +5,19 @@
 @endsection
 
 @section('content')
+    @if ($errors->has('message'))
+        <div class="alert alert-danger">
+            {{ $errors->first('message') }}
+        </div>
+    @endif
+
     <div class="login-form">
         <form action="{{ route('auth.login') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label>Email address</label>
                 <input id="email" type="email" name="email" class="@error('email') is-invalid @enderror form-control"
-                    value="{{ old('email') }}">
+                    value="{{ old('email') }}" placeholder="Email">
                 @error('email')
                     <div class="alert alert-danger mt-2">{{ $message }}</div>
                 @enderror
@@ -29,9 +35,8 @@
                     <input type="checkbox" name="remember"> Remember Me
                 </label>
                 <label class="pull-right">
-                    <a href="#">Forgotten Password?</a>
+                    <a href="">Forgotten Password?</a>
                 </label>
-
             </div>
             <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
             <div class="social-login-content">
@@ -43,7 +48,7 @@
                 </div>
             </div>
             <div class="register-link m-t-15 text-center">
-                <p>Don't have account ? <a href="{{route('auth.register')}}"> Sign Up Here</a></p>
+                <p>Don't have account ? <a href="{{ route('auth.register') }}"> Sign Up Here</a></p>
             </div>
         </form>
     </div>

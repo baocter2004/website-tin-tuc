@@ -4,7 +4,9 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ParagraphController;
 use App\Http\Controllers\AuthenController;
+use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(AuthenController::class)
+    ->middleware('throttle:5,1')
     ->name('auth.')
     ->group(function () {
         Route::get('/register', 'showFormRegister')->name('register');
@@ -31,6 +34,7 @@ Route::controller(AuthenController::class)
     });
 
 Route::prefix('admin')
+    // ->middleware(['auth', 'checkRole:admin'])
     ->name('admin.')
     ->group(function () {
         Route::prefix('users')
@@ -100,4 +104,29 @@ Route::prefix('admin')
                 Route::post('/trash/{tag}', 'restore')->name('restore');
                 Route::delete('/{tag}/force-destroy', 'forceDestroy')->name('force-destroy');
             });
+
+        Route::prefix('paragraphs')
+            ->name('paragraphs.')
+            ->controller(ParagraphController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{paragraph}/show', 'show')->name('show');
+                Route::get('/{paragraph}/edit', 'edit')->name('edit');
+                Route::put('/{paragraph}', 'update')->name('update');
+                Route::delete('/{paragraph}', 'destroy')->name('destroy');
+
+                Route::get('/trash', 'trash')->name('trash');
+                Route::post('/trash/{paragraph}', 'restore')->name('restore');
+                Route::delete('/{paragraph}/force-destroy', 'forceDestroy')->name('force-destroy');
+            });
+    });
+
+
+Route::name('client.')
+    ->group(function () {
+        Route::get('/', function () {
+            echo "đây là trang client";
+        })->name('index');
     });

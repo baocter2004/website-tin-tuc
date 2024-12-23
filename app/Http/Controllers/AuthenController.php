@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RegisterSuccess;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+
 
 class AuthenController extends Controller
 {
@@ -60,7 +61,7 @@ class AuthenController extends Controller
             'password' => ['required'],
         ]);
 
-        $remember = request()->has('remember');
+        $remember = request()->filled('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             request()->session()->regenerate();

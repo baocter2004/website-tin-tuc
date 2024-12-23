@@ -15,8 +15,10 @@ class CreateParagraphsTable extends Migration
     {
         Schema::create('paragraphs', function (Blueprint $table) {
             $table->id();
+            $table->integer('order');
             $table->foreignId('article_id')->constrained('articles','id')->onDelete('cascade');
             $table->text('paragraph');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

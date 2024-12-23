@@ -35,7 +35,7 @@
                                 class="d-inline">
                                 @csrf
                                 <button class="btn btn-warning btn-xl"
-                                    onclick="return confirm('Bạn có muốn khôi phục người dùng này?')">
+                                    onclick="return confirm('Bạn có muốn khôi phục danh mục bài viết này?')">
                                     <i class="fa fa-undo"></i>
                                 </button>
                             </form>
@@ -44,7 +44,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-xl"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục bài viết này?')">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </form>

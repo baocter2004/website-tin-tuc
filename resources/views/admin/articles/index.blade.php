@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Danh Sách Người Dùng')
+@section('title', 'Danh Sách Bài Viết')
 
 @section('content')
     <div class="mt-3 mb-3">
@@ -34,6 +34,7 @@
                     <th>Tags</th>
                     <th>Content</th>
                     <th>Summary</th>
+                    <th>Paragraphs</th>
                     <th>Auth_id</th>
                     <th>Category_id</th>
                     <th>Publish At</th>
@@ -58,8 +59,14 @@
                             @endforeach
                         </td>
                         <td scope="row">{{ Str::limit($article->content, 50) }}</td>
+                        <td scope="row">{{ Str::limit($article->summary, 50) }}</td>
                         <td scope="row">
-                            {{ $article->summary }}
+                            @foreach ($article->paragraphs as $paragraph)
+                                <a href="{{ route('admin.paragraphs.index') }}" class="badge bg-primary me-2 mb-2"
+                                    style="text-decoration: none;">
+                                    {{ $paragraph->id }}
+                                </a>
+                            @endforeach
                         </td>
                         <td scope="row">
                             {{ $article->auth_id }}
@@ -80,7 +87,7 @@
                             <a href="{{ route('admin.articles.show', $article->id) }}" class="btn btn-info btn-xl">
                                 <i class="fa fa-eye"></i>
                             </a>
-                            <a href="{{ route('admin.articles.edit', $article->id) }}" class="btn btn-warning btn-xl">
+                            <a href="{{ route('admin.articles.edit', $article->id) }}" class="btn btn-warning btn-xl mt-2 mb-2">
                                 <i class="fa fa-pencil"></i>
                             </a>
                             <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST"
