@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\RegisterSuccess;
+use App\Events\RegisterSuccessed;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +41,8 @@ class AuthenController extends Controller
             $user = User::query()->create($data);
 
             Auth::login($user);
+
+            RegisterSuccessed::dispatch($user);
 
             request()->session()->regenerate();
 
@@ -91,5 +93,21 @@ class AuthenController extends Controller
         request()->session()->regenerateToken();
 
         return redirect('/');
+    }
+    public function verify($id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        // Kiểm tra hash và email
+        if (sha1($user->email) === $hash) {
+            // Xác nhận email
+            $user->email_verified_at = now();
+            $user->is_active = 1;
+            $user->save();
+
+            return redirect()->route('client.index')->with('success', 'Email của bạn đã được xác thực.');
+        }
+
+        return redirect()->route('index')->with('error', 'Liên kết xác thực không hợp lệ.');
     }
 }

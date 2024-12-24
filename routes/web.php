@@ -1,12 +1,15 @@
 <?php
 
+use App\Events\RegisterSuccessed;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ParagraphController;
 use App\Http\Controllers\AuthenController;
-use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\Client\API\ClientController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,17 +27,19 @@ Route::controller(AuthenController::class)
     ->middleware('throttle:5,1')
     ->name('auth.')
     ->group(function () {
-        Route::get('/register', 'showFormRegister')->name('register');
+        Route::get('/register', 'showFormRegister')->name('register')->middleware('checkIfLogin');
         Route::post('/register', 'handleRegister');
 
         Route::get('/login', 'showFormLogin')->name('login');
         Route::post('/login', 'handleLogin');
 
-        Route::post('/logout', 'logout');
+        Route::post('/logout', 'logout')->middleware('auth');
+
+        Route::get('/verify/{id}/{hash}', 'verify')->name('verify')->middleware('auth');
     });
 
 Route::prefix('admin')
-    // ->middleware(['auth', 'checkRole:admin'])
+    ->middleware(['auth', 'checkRole:admin'])
     ->name('admin.')
     ->group(function () {
         Route::prefix('users')
@@ -123,10 +128,3 @@ Route::prefix('admin')
             });
     });
 
-
-Route::name('client.')
-    ->group(function () {
-        Route::get('/', function () {
-            echo "đây là trang client";
-        })->name('index');
-    });
