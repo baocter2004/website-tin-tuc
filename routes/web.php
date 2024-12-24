@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ParagraphController;
 use App\Http\Controllers\AuthenController;
-use App\Http\Controllers\Client\API\ClientController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -128,3 +127,10 @@ Route::prefix('admin')
             });
     });
 
+
+Route::name('client.')
+    ->group(function () {
+        Route::get('/', function () {
+            echo "đây là trang client";
+        })->name('index');
+    });
