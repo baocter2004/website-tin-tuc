@@ -65,4 +65,7 @@ class User extends Authenticatable
     public function isSubcriber() {
         return $this->role === self::USER_ROLE[3];
     }
+    public function articles() {
+        return $this->hasMany(Article::class,'auth_id');
+    }
 }

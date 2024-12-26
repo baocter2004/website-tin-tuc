@@ -142,6 +142,7 @@ class ParagraphController extends Controller
                 'max:2048'
             ]
         ]);
+
         DB::beginTransaction();
 
         try {
@@ -150,9 +151,12 @@ class ParagraphController extends Controller
                 'article_id' => request('article_id'),
                 'paragraph' => request('paragraph'),
             ];
+
             $paragraph = Paragraph::with('mediums')->findOrFail($id);
             $paragraph->update($dataParagraph);
-            if ($paragraph) {
+
+            // Kiểm tra nếu request('file_path') có dữ liệu và là mảng
+            if (is_array(request('file_path')) && count(request('file_path')) > 0) {
                 foreach (request('file_path') as $id => $file_path) {
                     $media = Media::findOrFail($id);
                     $oldImage = $media->file_path;
@@ -160,23 +164,21 @@ class ParagraphController extends Controller
                         'paragraph_id' => $paragraph->id,
                         'file_path' => Storage::put('articles/paragraphs', $file_path)
                     ]);
-                    if (
-                        !empty($oldImage)
-                        && Storage::exists($oldImage)
-                        && request()->hasFile('file_path')
-                    ) {
+
+                    if (!empty($oldImage) && Storage::exists($oldImage) && request()->hasFile('file_path')) {
                         Storage::delete($oldImage);
                     }
                 }
             }
+
             DB::commit();
             return redirect()->route('admin.paragraphs.index')
-                ->with('success', 'Thêm Mới Thành Công');
+                ->with('success', 'Cập Nhật Thành Công');
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::debug("message " . $th->getMessage());
             return back()->withErrors([
-                'message' => 'Có Lỗi Xảy Ra !!!'
+                'message' => 'Có Lỗi Xảy Ra !!!' . $th->getMessage()
             ]);
         }
     }
