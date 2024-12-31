@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\ArticleViewed;
 use App\Events\RegisterSuccessed;
+use App\Listeners\IncreaseViewCountOnArticleViewed;
 use App\Listeners\SendMailVerify;
 use App\Listeners\SendMailWelcome;
 use Illuminate\Auth\Events\Registered;
@@ -24,6 +26,10 @@ class EventServiceProvider extends ServiceProvider
         RegisterSuccessed::class => [
             SendMailWelcome::class,
             SendMailVerify::class
+        ],
+
+        ArticleViewed::class => [
+            IncreaseViewCountOnArticleViewed::class
         ]
     ];
 

@@ -13,6 +13,7 @@ class Article extends Model
         "title",
         "image",
         "slug",
+        "view_count",
         "content",
         "summary",
         "auth_id",
@@ -43,11 +44,21 @@ class Article extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'auth_id');
     }
 
     public function paragraphs()
     {
         return $this->hasMany(Paragraph::class);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(View::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

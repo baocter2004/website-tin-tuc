@@ -18,7 +18,7 @@ class CreateCommentsTable extends Migration
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('content');
-            $table->enum('status',['approved','pending','rejected','deleted']);
+            $table->enum('status', ['approved', 'pending', 'rejected', 'deleted'])->default('pending');
             $table->string('delete_reason')->nullable()->default(null);
             $table->timestamps();
         });

@@ -3,11 +3,12 @@
 use App\Events\RegisterSuccessed;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ParagraphController;
 use App\Http\Controllers\AuthenController;
-use App\Http\Controllers\Client\API\ClientController;
+use App\Http\Controllers\Client\Blade\ClientController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +40,10 @@ Route::controller(AuthenController::class)
     });
 
 Route::prefix('admin')
-    ->middleware(['auth', 'checkRole:admin'])
+    // ->middleware(['auth', 'checkRole:admin'])
     ->name('admin.')
     ->group(function () {
+        Route::get('/', ['dashboard', DashboardController::class])->name('dashboard');
         Route::prefix('users')
             ->name('users.')
             ->controller(UserController::class)
@@ -128,3 +130,9 @@ Route::prefix('admin')
             });
     });
 
+Route::controller(ClientController::class)
+    ->name('client.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/single-post/{id}', 'singlePost')->name('single-post');
+    });

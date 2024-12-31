@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 @section('title')
-    Thêm Mới Đoạn Văn
+    chỉnh sửa Đoạn Văn
 @endsection
 @section('content')
     @if ($errors->any())
@@ -38,15 +38,22 @@
             @foreach ($paragraph->mediums as $media)
                 <div class="form-media" id="file-input-container">
                     <label for="file_path" class="form-label">File Path</label>
-                    <input type="file" class="form-control" name="file_path[{{$media->id}}]" id="file_path">
+                    <input type="file" class="form-control" name="file_path[{{ $media->id }}]" id="file_path">
                 </div>
                 <img src="{{ Storage::url($media->file_path) }}" alt="" width="200px">
             @endforeach
+            @if ($paragraph->mediums->isEmpty())
+                <div class="form-media mt-2" id="file-input-container">
+                    <label class="form-label">File Path</label>
+                    <input type="file" class="form-control" name="file_path[]" id="file_path">
+                </div>
+            @endif
+
         </div>
         <a name="add-file-input" id="add-file-input" class="btn btn-info mt-3">
             Thêm ảnh
         </a>
-        <button type="submit" class="btn btn-primary mt-3">Thêm Mới</button>
+        <button type="submit" class="btn btn-primary mt-3">Chỉnh Sửa</button>
     </form>
     <script>
         document.getElementById('add-file-input').addEventListener('click', function(event) {

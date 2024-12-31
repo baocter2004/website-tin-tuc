@@ -12,14 +12,14 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable , SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    const USER_ROLE = ['admin','editor','author','subcriber'];
+    const USER_ROLE = ['admin', 'editor', 'author', 'subcriber'];
     protected $fillable = [
         'first_name',
         'last_name',
@@ -53,16 +53,32 @@ class User extends Authenticatable
         'is_active' => 0
     ];
 
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->role === self::USER_ROLE[0];
     }
-    public function isEditor() {
+    public function isEditor()
+    {
         return $this->role === self::USER_ROLE[1];
     }
-    public function isAuthor() {
+    public function isAuthor()
+    {
         return $this->role === self::USER_ROLE[2];
     }
-    public function isSubcriber() {
+    public function isSubcriber()
+    {
         return $this->role === self::USER_ROLE[3];
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
+    }
+    public function articles()
+    {
+        return $this->hasMany(Article::class, 'auth_id');
+    }
+    public function views()
+    {
+        return $this->hasMany(View::class);  // Một người dùng có nhiều lượt xem
     }
 }

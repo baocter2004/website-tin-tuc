@@ -1646,6 +1646,10 @@
     border-color: var(--accent-color);
   }
   
+  .comment-form form input::-moz-placeholder {
+    color: color-mix(in srgb, var(--default-color), transparent 50%);
+  }
+  
   .comment-form form input::placeholder {
     color: color-mix(in srgb, var(--default-color), transparent 50%);
   }
@@ -1665,6 +1669,10 @@
     box-shadow: none;
     border-color: var(--accent-color);
     background-color: var(--surface-color);
+  }
+  
+  .comment-form form textarea::-moz-placeholder {
+    color: color-mix(in srgb, var(--default-color), transparent 50%);
   }
   
   .comment-form form textarea::placeholder {
@@ -1861,6 +1869,10 @@
   .contact .php-email-form input[type=email]:focus,
   .contact .php-email-form textarea:focus {
     border-color: var(--accent-color);
+  }
+  
+  .contact .php-email-form input[type=text]::-moz-placeholder, .contact .php-email-form input[type=email]::-moz-placeholder, .contact .php-email-form textarea::-moz-placeholder {
+    color: color-mix(in srgb, var(--default-color), transparent 70%);
   }
   
   .contact .php-email-form input[type=text]::placeholder,

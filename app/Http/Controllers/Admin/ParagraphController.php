@@ -121,7 +121,7 @@ class ParagraphController extends Controller
                 'max:5',
                 Rule::unique('paragraphs')->where(function ($query) {
                     return $query->where('article_id', request('article_id'));
-                })->ignore($id)
+                })->ignore($id, 'id')
             ],
             'article_id' => [
                 'required',
@@ -142,45 +142,58 @@ class ParagraphController extends Controller
                 'max:2048'
             ]
         ]);
+
         DB::beginTransaction();
 
         try {
+            // Cập nhật thông tin paragraph
             $dataParagraph = [
                 'order' => request('order'),
                 'article_id' => request('article_id'),
                 'paragraph' => request('paragraph'),
             ];
+
             $paragraph = Paragraph::with('mediums')->findOrFail($id);
             $paragraph->update($dataParagraph);
-            if ($paragraph) {
+
+            // Kiểm tra nếu request('file_path') có dữ liệu và là mảng
+            if (is_array(request('file_path')) && count(request('file_path')) > 0) {
                 foreach (request('file_path') as $id => $file_path) {
-                    $media = Media::findOrFail($id);
-                    $oldImage = $media->file_path;
-                    $media->update([
-                        'paragraph_id' => $paragraph->id,
-                        'file_path' => Storage::put('articles/paragraphs', $file_path)
-                    ]);
-                    if (
-                        !empty($oldImage)
-                        && Storage::exists($oldImage)
-                        && request()->hasFile('file_path')
-                    ) {
-                        Storage::delete($oldImage);
+                    $media = Media::find($id);
+                    if ($media) {
+                        $oldImage = $media->file_path;
+
+                        $filePath = Storage::put('articles/paragraphs', $file_path);
+                        $media->update([
+                            'paragraph_id' => $paragraph->id,
+                            'file_path' => $filePath,
+                        ]);
+
+                        if ($oldImage && Storage::exists($oldImage)) {
+                            Storage::delete($oldImage);
+                        }
+                    } else {
+                        $filePath = Storage::put('articles/paragraphs', $file_path);
+                        Media::create([
+                            'paragraph_id' => $paragraph->id,
+                            'file_path' => $filePath,
+                        ]);
                     }
                 }
             }
+
             DB::commit();
             return redirect()->route('admin.paragraphs.index')
-                ->with('success', 'Thêm Mới Thành Công');
+                ->with('success', 'Cập Nhật Thành Công');
         } catch (\Throwable $th) {
+            // Rollback nếu có lỗi
             DB::rollBack();
             Log::debug("message " . $th->getMessage());
             return back()->withErrors([
-                'message' => 'Có Lỗi Xảy Ra !!!'
+                'message' => 'Có Lỗi Xảy Ra !!!' . $th->getMessage()
             ]);
         }
     }
-
 
     public function destroy(string $id)
     {
@@ -232,5 +245,25 @@ class ParagraphController extends Controller
             ->paginate(5);
 
         return view('admin.articles.paragraphs.trash', compact('paragraphs'));
+    }
+
+    public function restore(string $id)
+    {
+        try {
+            $paragraph = Paragraph::onlyTrashed()->findOrFail($id);
+
+            $paragraph->restore();
+
+            foreach ($paragraph->mediums as $media) {
+                $media->restore();
+            }
+
+            return redirect()->route('admin.paragraphs.index')->with('success', 'Khôi phục Thành Công!');
+        } catch (\Throwable $th) {
+            Log::debug("message " . $th->getMessage());
+            return back()->withErrors([
+                'message' => 'Có Lỗi Xảy Ra !!!' .  $th->getMessage()
+            ]);
+        }
     }
 }

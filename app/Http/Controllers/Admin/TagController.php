@@ -70,9 +70,9 @@ class TagController extends Controller
     public function edit(string $id)
     {
         try {
-            $Tag = Tag::findOrFail($id);
+            $tag = Tag::findOrFail($id);
 
-            return view('admin.tags.edit', compact('Tag'));
+            return view('admin.tags.edit', compact('tag'));
         } catch (\Throwable $th) {
             return back()->with('errors', false);
         }
