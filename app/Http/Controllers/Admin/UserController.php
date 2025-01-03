@@ -17,7 +17,7 @@ class UserController extends Controller
         $users = User::latest('id')->paginate(5);
         return view('admin.users.index', compact(['users']));
     }
-    
+
     public function create()
     {
         $roles = User::USER_ROLE;
@@ -30,11 +30,14 @@ class UserController extends Controller
             $data = $storeUserRequest->except('image');
             $imagePath = null;
 
+            if ($storeUserRequest->filled('email_verified_at')) {
+                $data['email_verified_at'] = now();
+            }
+
             if ($storeUserRequest->hasFile('image')) {
                 $imagePath = Storage::put('users', $storeUserRequest->file('image'));
                 $data['image'] = $imagePath;
             }
-
             $data['password'] = Hash::make($storeUserRequest->password);
 
             User::create($data);
@@ -87,6 +90,8 @@ class UserController extends Controller
             $data = $updateUserRequest->except('image');
 
             $data['is_active'] = isset($data['is_active']) ? $data['is_active']  : 0;
+
+            $data['email_verified_at'] = $updateUserRequest->filled('email_verified_at') ? now() : null;
 
             if ($updateUserRequest->hasFile('image')) {
                 $data['image'] = Storage::put('users', $updateUserRequest->file('image'));

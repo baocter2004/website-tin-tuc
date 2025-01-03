@@ -25,6 +25,9 @@
                     <th>Image</th>
                     <th>Role</th>
                     <th>Is Active</th>
+                    <th>Verify Email At</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -59,10 +62,19 @@
                             </span>
                         </td>
                         <td scope="row">
+                            {{ $user->email_verified_at ? $user->email_verified_at : 'Chưa Xác Minh' }}
+                        </td>
+                        <td scope="row">
+                            {{ $user->created_at ? $user->created_at : '' }}
+                        </td>
+                        <td scope="row">
+                            {{ $user->updated_at ? $user->updated_at : '' }}
+                        </td>
+                        <td scope="row">
                             <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-info btn-xl">
                                 <i class="fa fa-eye"></i>
                             </a>
-                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning btn-xl">
+                            <a href="{{ route('admin.users.edit', $user->id) }}" class="mt-2 mb-2 btn btn-warning btn-xl">
                                 <i class="fa fa-pencil"></i>
                             </a>
                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">

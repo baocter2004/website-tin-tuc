@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ParagraphController;
 use App\Http\Controllers\AuthenController;
 use App\Http\Controllers\Client\Blade\ClientController;
+use App\Http\Controllers\Client\Blade\CommentController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -132,7 +133,17 @@ Route::prefix('admin')
 
 Route::controller(ClientController::class)
     ->name('client.')
+    ->middleware('shareDataToHeader')
     ->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/single-post/{id}', 'singlePost')->name('single-post');
+
+        Route::name('comments.')
+            ->controller(CommentController::class)
+            ->group(function () {
+                Route::post('/{articleId}', 'storeComment')->name('store-comment')->middleware(['checkLoginToComment']);
+                Route::post('/reply-comment/{commentId}', 'replyComment')->name('reply-comment');
+                Route::put('/update-comment/{commentId}', 'updateComment')->name('update-comment');
+                Route::delete('/destroy-comment/{commentId}', 'forceDestroyComment')->name('destroy-comment');
+            });
     });
