@@ -55,9 +55,15 @@
                     @endforeach
                 </select>
             </div>
-            <div class="mt-3 mb-2">
-                <label for="is_active">Active</label>
-                <input type="checkbox" class="form-checkbox" name="is_active" value="1">
+            <div class="row">
+                <div class="col-md-2 mt-3 mb-2">
+                    <label for="email_verified_at">Verify</label>
+                    <input type="checkbox" class="form-checkbox" name="email_verified_at">
+                </div>
+                <div class="col-md-2 mt-3 mb-2">
+                    <label for="is_active">Active</label>
+                    <input type="checkbox" class="form-checkbox" name="is_active" value="1">
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

@@ -1,16 +1,17 @@
 <?php
 
-use App\Events\RegisterSuccessed;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ParagraphController;
+
 use App\Http\Controllers\AuthenController;
+
 use App\Http\Controllers\Client\Blade\ClientController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Client\Blade\CommentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -128,11 +129,34 @@ Route::prefix('admin')
                 Route::post('/trash/{paragraph}', 'restore')->name('restore');
                 Route::delete('/{paragraph}/force-destroy', 'forceDestroy')->name('force-destroy');
             });
+
+        Route::prefix('comments')
+            ->name('comments.')
+            ->controller(AdminCommentController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::put('/{comment}/update-status', 'updateStatus')->name('update-status');
+
+                Route::delete('/{comment}', 'destroy')->name('destroy');
+                Route::get('/trash', 'trash')->name('trash');
+                Route::post('/trash/{comment}', 'restore')->name('restore');
+                Route::delete('/{comment}/force-destroy', 'forceDestroy')->name('force-destroy');
+            });
     });
 
 Route::controller(ClientController::class)
     ->name('client.')
+    ->middleware('shareDataToHeader')
     ->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/single-post/{id}', 'singlePost')->name('single-post');
+
+        Route::name('comments.')
+            ->controller(CommentController::class)
+            ->group(function () {
+                Route::post('/{articleId}', 'storeComment')->name('store-comment')->middleware(['checkLoginToComment']);
+                Route::post('/reply-comment/{commentId}', 'replyComment')->name('reply-comment');
+                Route::put('/update-comment/{commentId}', 'updateComment')->name('update-comment');
+                Route::delete('/destroy-comment/{commentId}', 'forceDestroyComment')->name('destroy-comment');
+            });
     });

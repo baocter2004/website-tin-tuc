@@ -56,10 +56,17 @@
                     @endforeach
                 </select>
             </div>
-            <div class="mt-3 mb-2">
-                <label for="is_active">Active</label>
-                <input type="checkbox" class="form-checkbox" name="is_active" value="1"
-                    @if ($user->is_active === 1) checked @endif>
+            <div class="row">
+                <div class="col-md-2 mt-3 mb-2">
+                    <label for="email_verified_at">Verify</label>
+                    <input type="checkbox" class="form-checkbox" name="email_verified_at"
+                        @if ($user->email_verified_at) checked @endif>
+                </div>
+                <div class="col-md-2 mt-3 mb-2">
+                    <label for="is_active">Active</label>
+                    <input type="checkbox" class="form-checkbox" name="is_active" value="1"
+                        @if ($user->is_active === 1) checked @endif>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

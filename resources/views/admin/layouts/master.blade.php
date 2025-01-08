@@ -46,6 +46,7 @@
     <!-- /#right-panel -->
 
     @include('admin.layouts.partials.script')
+    @stack('script')
 </body>
 
 </html>

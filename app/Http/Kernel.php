@@ -56,6 +56,8 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'checkRole' => \App\Http\Middleware\CheckRoleMiddleware::class,
         'checkIfLogin' => \App\Http\Middleware\checkIfLogin::class,
+        'checkLoginToComment' => \App\Http\Middleware\UserCheckCommentLogin::class,
+        'shareDataToHeader' => \App\Http\Middleware\ShareHeaderDataMiddleware::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,

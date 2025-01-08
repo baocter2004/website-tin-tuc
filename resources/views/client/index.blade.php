@@ -137,7 +137,7 @@
                 <div class="col-md-9">
 
                     <div class="d-lg-flex post-entry">
-                        <a href="{{ route('client.single-post', $article->id) }}"
+                        <a href="{{ route('client.single-post',$articleCultureViewest->id) }}"
                             class="me-4 thumbnail mb-4 mb-lg-0 d-inline-block">
                             <img src="{{ Storage::url($articleCultureViewest->image) }}" alt="" class="img-fluid"
                                 width="600px">
@@ -149,7 +149,7 @@
                                 <span>{{ $articleCultureViewest->publish_at }}</span>
                             </div>
                             <h3><a
-                                    href="{{ route('client.single-post', $article->id) }}">{{ $articleCultureViewest->title }}</a>
+                                    href="{{ route('client.single-post', $articleCultureViewest->id) }}">{{ $articleCultureViewest->title }}</a>
                             </h3>
                             <p>{{ Str::limit($articleCultureViewest->summary, 200) }}</p>
                             <div class="d-flex align-items-center author">

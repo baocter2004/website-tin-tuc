@@ -17,39 +17,38 @@ use Illuminate\Support\Facades\Log;
 class ClientController extends Controller
 {
 
+    protected $commentController;
+
+    public function __construct(CommentController $commentController)
+    {
+        $this->commentController = $commentController;
+    }
+
     public function index()
     {
-        $baseQuery = Article::with('category', 'user', 'tags') // eager load tất cả quan hệ ngay từ đầu
+        $baseQuery = Article::with(['category', 'user', 'tags'])
             ->where('status', 'published');
-
-        // Lấy 6 bài viết mới nhất
         $articles = (clone $baseQuery)
-            ->latest('created_at')
+            ->latest('publish_at')
             ->take(6)
             ->get();
+        $articleLatest = $articles->sortByDesc('view_count')->first();
 
-        // Lấy bài viết mới nhất trong 6 bài viết đã lấy
-        $articleLatest = $articles->first();
-
-        // bài viết trending
         $articleTrending = (clone $baseQuery)
             ->orderByDesc('view_count')
             ->take(5)
             ->get();
 
-        // Lấy 3 bài viết thuộc category name = "văn hóa"
         $category = Category::where('name', 'Văn Hóa')->first();
 
-        // nếu tìm thấy danh mục thì thực hiện truy vấn
         if ($category) {
-            // Get the latest 3 articles in the "Văn Hóa" category
+
             $articleCultures = (clone $baseQuery)
-                ->where('category_id', $category->id)  // Use the id of the category found
-                ->latest('created_at')
+                ->where('category_id', $category->id)
+                ->latest('publish_at')
                 ->take(3)
                 ->get();
 
-            // Get the article with the most views in the "Văn Hóa" category
             $articleCultureViewest = (clone $baseQuery)
                 ->where('category_id', $category->id)
                 ->orderByDesc('view_count')
@@ -58,15 +57,12 @@ class ClientController extends Controller
             $articleCultures = collect();
             $articleCultureViewest = null;
         }
-
         return view('client.index', compact(
-            [
-                'articles',
-                'articleLatest',
-                'articleCultures',
-                'articleCultureViewest',
-                'articleTrending'
-            ]
+            'articles',
+            'articleLatest',
+            'articleCultures',
+            'articleCultureViewest',
+            'articleTrending'
         ));
     }
 
@@ -77,7 +73,10 @@ class ClientController extends Controller
             $article = Article::with('category', 'user', 'tags', 'paragraphs.mediums')->findOrFail($id);
             $tags = Tag::select('name')->get();
 
+            $comments = $this->commentController->getComments($id);
+            
             $userId = auth()->id() ?? null;
+
             $ipAddress = request()->ip();
 
             View::create([
@@ -91,11 +90,15 @@ class ClientController extends Controller
 
             $recentArticles = $this->recentArticles();
 
-            return view('client.single-post', compact(
-                'article',
-                'recentArticles',
-                'tags'
-            ));
+            return view(
+                'client.single-post',
+                compact(
+                    'article',
+                    'recentArticles',
+                    'tags',
+                    'comments'
+                )
+            );
         } catch (\Throwable $th) {
             Log::error('Error in singlePost method: ' . $th->getMessage());
             return back()
@@ -103,6 +106,8 @@ class ClientController extends Controller
         }
     }
 
+
+    // các bài viết đã xem gần đây
     private function recentArticles()
     {
         try {

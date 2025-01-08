@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Events\ArticleViewed;
+use App\Events\CommentStatusUpdate;
 use App\Events\RegisterSuccessed;
 use App\Listeners\IncreaseViewCountOnArticleViewed;
 use App\Listeners\SendMailVerify;
 use App\Listeners\SendMailWelcome;
+use App\Listeners\UpdateCommentStatus;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -30,6 +32,10 @@ class EventServiceProvider extends ServiceProvider
 
         ArticleViewed::class => [
             IncreaseViewCountOnArticleViewed::class
+        ],
+
+        CommentStatusUpdate::class => [
+            UpdateCommentStatus::class
         ]
     ];
 
