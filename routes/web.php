@@ -10,8 +10,13 @@ use App\Http\Controllers\Admin\ParagraphController;
 
 use App\Http\Controllers\AuthenController;
 
+use App\Http\Controllers\Author\AuthorController;
+
 use App\Http\Controllers\Client\Blade\ClientController;
 use App\Http\Controllers\Client\Blade\CommentController;
+
+use App\Http\Controllers\Editor\EditorController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,16 +40,20 @@ Route::controller(AuthenController::class)
         Route::get('/login', 'showFormLogin')->name('login');
         Route::post('/login', 'handleLogin');
 
-        Route::post('/logout', 'logout')->middleware('auth');
+        Route::post('/logout', 'logout')->name('logout')->middleware('auth');
 
         Route::get('/verify/{id}/{hash}', 'verify')->name('verify')->middleware('auth');
     });
 
 Route::prefix('admin')
-    // ->middleware(['auth', 'checkRole:admin'])
+    ->middleware(['auth', 'checkRole:admin'])
     ->name('admin.')
     ->group(function () {
-        Route::get('/', ['dashboard', DashboardController::class])->name('dashboard');
+        Route::controller(DashboardController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('dashboard');
+            });
+
         Route::prefix('users')
             ->name('users.')
             ->controller(UserController::class)
@@ -142,6 +151,23 @@ Route::prefix('admin')
                 Route::post('/trash/{comment}', 'restore')->name('restore');
                 Route::delete('/{comment}/force-destroy', 'forceDestroy')->name('force-destroy');
             });
+    });
+
+Route::controller(EditorController::class)
+    ->prefix('editors')
+    ->name('editors.')
+    ->middleware(['auth', 'checkRole:editor'])
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{article}/edit', 'edit')->name('edit');
+        Route::put('/{article}', 'update')->name('update');
+    });
+
+Route::controller(AuthorController::class)
+    ->name('authors.')
+    ->middleware(['auth', 'checkRole:author'])
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
     });
 
 Route::controller(ClientController::class)

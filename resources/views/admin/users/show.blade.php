@@ -25,7 +25,7 @@
                             @break
 
                             @case('is_active')
-                                @if ($value === '1')
+                                @if ($value === 1)
                                     <td>
                                         <span class="badge bg-success">Yes</span>
                                     </td>

@@ -37,7 +37,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        
+
         <div class="row">
 
             <div class="col-lg-8">
@@ -130,7 +130,6 @@
                         @else
                             <h4 class="comments-count">No comments yet</h4>
                         @endif
-
                         @foreach ($comments as $comment)
                             <div id="comment-{{ $comment->id }}" class="mb-4 p-3 border rounded">
                                 <div class="d-flex align-items-start">
@@ -150,6 +149,7 @@
                                         <div class="comment-content mt-2 mb-3">
                                             {{ $comment->content }}
                                         </div>
+
                                         @foreach ($comment->childComments as $childComment)
                                             @if ($childComment->status === 'approved' && $childComment->parent_id == $comment->id)
                                                 <div class="d-flex mt-3 ms-4">
@@ -158,69 +158,89 @@
                                                         alt="{{ $childComment->user->first_name }}"
                                                         style="width: 40px; height: 40px; object-fit: cover;">
                                                     <div class="ms-3">
-                                                        <h6 class="mb-1">
-                                                            {{ $childComment->user->first_name }}
-                                                            {{ $childComment->user->last_name }}
-                                                        </h6>
+                                                        <h6 class="mb-1">{{ $childComment->user->first_name }}
+                                                            {{ $childComment->user->last_name }}</h6>
                                                         <p class="mt-2" id="comment-content-{{ $childComment->id }}">
-                                                            {{ $childComment->content }}</p>
-
-                                                        <form
-                                                            action="{{ route('client.comments.update-comment', $childComment->id) }}"
-                                                            method="POST" class="edit-form"
-                                                            id="edit-form-{{ $childComment->id }}" style="display: none;">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <textarea class="form-control mb-2" name="content" rows="2">{{ $childComment->content }}</textarea>
-                                                            <button type="submit" class="btn btn-primary btn-sm">Save
-                                                            </button>
-                                                            <button type="button"
-                                                                class="btn btn-secondary btn-sm cancel-edit"
-                                                                data-id="{{ $childComment->id }}">Cancel
-                                                            </button>
-                                                        </form>
-                                                        <div class="d-flex mt-2">
-                                                            @if (auth()->check() && auth()->user()->id === $childComment->user_id)
-                                                                <button class="btn btn-link btn-sm edit-comment-btn"
-                                                                    data-id="{{ $childComment->id }}">Edit
-                                                                </button>
+                                                            {{ $childComment->content }}
+                                                        </p>
+                                                        <div class="row">
+                                                            <div class="col-sm-4">
+                                                                <button class="btn btn-link btn-sm reply-btn"
+                                                                    data-id="{{ $comment->id }}">Reply</button>
+                                                            </div>
+                                                            <div class="col-sm-4">
                                                                 <form
-                                                                    action="{{ route('client.comments.destroy-comment', $childComment->id) }}"
-                                                                    method="POST" style="display:inline;">
+                                                                    action="{{ route('client.comments.update-comment', $childComment->id) }}"
+                                                                    method="POST" class="edit-form"
+                                                                    id="edit-form-{{ $childComment->id }}"
+                                                                    style="display: none;">
                                                                     @csrf
-                                                                    @method('DELETE')
-                                                                    <button class="btn btn-link btn-sm text-danger"
-                                                                        type="submit"
-                                                                        onclick="return confirm('Are you sure?')">Delete
-                                                                    </button>
+                                                                    @method('PUT')
+                                                                    <textarea class="form-control mb-2" name="content" rows="2">{{ $childComment->content }}</textarea>
+                                                                    <button type="submit"
+                                                                        class="btn btn-primary btn-sm">Save</button>
+                                                                    <button type="button"
+                                                                        class="btn btn-secondary btn-sm cancel-edit"
+                                                                        data-id="{{ $childComment->id }}">Cancel</button>
                                                                 </form>
-                                                            @endif
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="d-flex mt-2">
+                                                                    @if (auth()->check() && auth()->user()->id === $childComment->user_id)
+                                                                        <button class="btn btn-link btn-sm edit-comment-btn"
+                                                                            data-id="{{ $childComment->id }}">Edit</button>
+                                                                        <form
+                                                                            action="{{ route('client.comments.destroy-comment', $childComment->id) }}"
+                                                                            method="POST" style="display:inline;">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button class="btn btn-link btn-sm text-danger"
+                                                                                type="submit"
+                                                                                onclick="return confirm('Are you sure?')">Delete</button>
+                                                                        </form>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                @foreach ($childComment->childComments as $grandChildComment)
+                                                    @if ($grandChildComment->status === 'approved')
+                                                        <div class="ms-4 mt-3 border-start ps-3">
+                                                            <div class="d-flex align-items-start">
+                                                                <img src="{{ Storage::url($grandChildComment->user->image) }}"
+                                                                    class="rounded-circle flex-shrink-0 me-3"
+                                                                    style="width: 30px; height: 30px;">
+                                                                <div class="flex-grow-1">
+                                                                    <h6>{{ $grandChildComment->user->first_name }}
+                                                                        {{ $grandChildComment->user->last_name }}</h6>
+                                                                    <p>{{ $grandChildComment->content }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
                                             @endif
                                         @endforeach
 
                                         <div class="d-flex mt-3">
                                             @if (auth()->check() && auth()->user()->id === $comment->user_id)
                                                 <button class="btn btn-link btn-sm edit-comment-btn"
-                                                    data-id="{{ $comment->id }}">Edit
-                                                </button>
+                                                    data-id="{{ $comment->id }}">Edit</button>
                                                 <form
                                                     action="{{ route('client.comments.destroy-comment', $comment->id) }}"
                                                     method="POST" style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-link btn-sm text-danger" type="submit"
-                                                        onclick="return confirm('Are you sure?')">Delete
-                                                    </button>
+                                                        onclick="return confirm('Are you sure?')">Delete</button>
                                                 </form>
                                             @endif
 
                                             @if ($comment->parent_id == 0)
                                                 <button class="btn btn-link btn-sm reply-btn"
-                                                    data-id="{{ $comment->id }}">Reply
-                                                </button>
+                                                    data-id="{{ $comment->id }}">Reply</button>
                                             @endif
                                         </div>
 
@@ -230,12 +250,9 @@
                                             @csrf
                                             @method('PUT')
                                             <textarea class="form-control mb-2" name="content" rows="2">{{ $comment->content }}</textarea>
-                                            <button type="submit" class="btn btn-primary btn-sm">Save
-
-                                            </button>
+                                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
                                             <button type="button" class="btn btn-secondary btn-sm cancel-edit"
-                                                data-id="{{ $comment->id }}">Cancel
-                                            </button>
+                                                data-id="{{ $comment->id }}">Cancel</button>
                                         </form>
 
                                         @if ($comment->parent_id == 0)
@@ -244,9 +261,7 @@
                                                 class="mt-2 reply-form" style="display:none;">
                                                 @csrf
                                                 <textarea class="form-control" name="content" rows="2" placeholder="Enter your reply..."></textarea>
-                                                <button class="btn btn-primary btn-sm mt-2">Submit
-
-                                                </button>
+                                                <button class="btn btn-primary btn-sm mt-2">Submit</button>
                                             </form>
                                         @endif
                                     </div>

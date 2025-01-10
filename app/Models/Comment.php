@@ -324,14 +324,9 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function childCommentsRecursive()
-    {
-        return $this->childComments()->with('childCommentsRecursive');
-    }
-
     // Quan hệ một bình luận có thể có nhiều bình luận con (trả lời)
     public function childComments()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(Comment::class, 'parent_id')->with('childComments');
     }
 }

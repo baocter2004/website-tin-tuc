@@ -118,20 +118,4 @@
       }
     });
   }
-
-  window.addEventListener("load", initSwiper);
-
-  // Khởi tạo đối tượng Notyf
-  var notyf = new Notyf();
-
-  // Hiển thị thông báo thành công
-  notyf.success('Thành công!');
-
-  // Hiển thị thông báo lỗi
-  notyf.error('Có lỗi xảy ra!');
-
-  // Hiển thị thông báo thông tin
-  notyf.info('Đây là thông báo thông tin!');
-
-
 })();

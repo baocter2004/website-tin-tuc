@@ -29,7 +29,7 @@ class CommentController extends Controller
         return $article->comments()
             ->whereNull('parent_id')
             ->where('status', 'approved')
-            ->with(['parentComment', 'childComments'])
+            ->with(['childComments'])
             ->get();
     }
 

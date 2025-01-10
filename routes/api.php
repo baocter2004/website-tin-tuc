@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\Client\API\ClientController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +12,3 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(ClientController::class)
-// middleware('auth:sanctum')
-    ->name('client.')
-    ->group(function () {
-        Route::get('/','index')->name('index');
-    });
